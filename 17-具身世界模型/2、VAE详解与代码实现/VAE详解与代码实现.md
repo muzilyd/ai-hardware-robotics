@@ -1,4 +1,4 @@
-﻿# VAE 详解与 MNIST 图像生成实现
+# VAE 详解与 MNIST 图像生成实现
 
 ### 本教程从 VAE 的提出动机、概率模型、ELBO 推导、最终训练目标，到 MNIST 图像生成代码实现进行完整讲解。重点是理解 VAE 为什么这样设计，以及训练和生成时应该如何判断模型是否真的学到了可采样的潜空间。
 
@@ -124,7 +124,7 @@ $$
 
 $$
 p_{\theta}(z|x)
-=
+{=}
 \frac{p_{\theta}(x|z)p(z)}{p_{\theta}(x)}
 $$
 
@@ -204,7 +204,7 @@ VAE 原本想最大化边缘对数似然：
 
 $$
 \log p_{\theta}(x)
-=
+{=}
 \log \int p_{\theta}(x,z)dz
 $$
 
@@ -214,7 +214,7 @@ $$
 
 $$
 \log p_{\theta}(x)
-=
+{=}
 \log \int
 q_{\phi}(z|x)
 \frac{p_{\theta}(x,z)}{q_{\phi}(z|x)}
@@ -225,7 +225,7 @@ $$
 
 $$
 \log p_{\theta}(x)
-=
+{=}
 \log
 \mathbb{E}_{q_{\phi}(z|x)}
 \left[
@@ -262,7 +262,7 @@ $$
 
 $$
 \mathcal{L}(\theta,\phi;x)
-=
+{=}
 \mathbb{E}_{q_{\phi}(z|x)}
 \left[
 \log
@@ -286,7 +286,7 @@ $$
 
 $$
 \mathcal{L}(\theta,\phi;x)
-=
+{=}
 \mathbb{E}_{q_{\phi}(z|x)}
 \left[
 \log p_{\theta}(x|z)+\log p(z)-\log q_{\phi}(z|x)
@@ -297,12 +297,12 @@ $$
 
 $$
 \mathcal{L}(\theta,\phi;x)
-=
+{=}
 \mathbb{E}_{q_{\phi}(z|x)}
 \left[
 \log p_{\theta}(x|z)
 \right]
--
+{-}
 D_{KL}\left(q_{\phi}(z|x)\|p(z)\right)
 $$
 
@@ -311,12 +311,12 @@ $$
 $$
 \boxed{
 \mathcal{L}(\theta,\phi;x)
-=
+{=}
 \mathbb{E}_{q_{\phi}(z|x)}
 \left[
 \log p_{\theta}(x|z)
 \right]
--
+{-}
 D_{KL}\left(q_{\phi}(z|x)\|p(z)\right)
 }
 $$
@@ -330,8 +330,8 @@ $$
 
 $$
 \text{Loss}
-=
--
+{=}
+{-}
 \mathcal{L}(\theta,\phi;x)
 $$
 
@@ -340,7 +340,7 @@ $$
 $$
 \boxed{
 \text{VAE Loss}
-=
+{=}
 \text{Reconstruction Loss}
 +
 \text{KL Loss}
@@ -368,7 +368,7 @@ $$
 
 $$
 D_{KL}\left(q_{\phi}(z|x)\|p(z)\right)
-=
+{=}
 \frac{1}{2}
 \sum_j
 \left(
@@ -380,8 +380,8 @@ $$
 
 $$
 D_{KL}
-=
--
+{=}
+{-}
 \frac{1}{2}
 \sum_j
 \left(
@@ -397,7 +397,7 @@ $$
 
 $$
 \log p_{\theta}(x)
-=
+{=}
 \mathbb{E}_{q_{\phi}(z|x)}[\log p_{\theta}(x)]
 $$
 
@@ -411,7 +411,7 @@ $$
 
 $$
 \log p_{\theta}(x)
-=
+{=}
 \mathbb{E}_{q_{\phi}(z|x)}
 \left[
 \log
@@ -423,7 +423,7 @@ $$
 
 $$
 \log p_{\theta}(x)
-=
+{=}
 \mathbb{E}_{q_{\phi}(z|x)}
 \left[
 \log
@@ -439,7 +439,7 @@ $$
 
 $$
 \log p_{\theta}(x)
-=
+{=}
 \mathbb{E}_{q_{\phi}(z|x)}
 \left[
 \log
@@ -457,7 +457,7 @@ $$
 
 $$
 \mathcal{L}(\theta,\phi;x)
-=
+{=}
 \mathbb{E}_{q_{\phi}(z|x)}
 \left[
 \log
@@ -479,7 +479,7 @@ $$
 $$
 \boxed{
 \log p_{\theta}(x)
-=
+{=}
 \mathcal{L}(\theta,\phi;x)
 +
 D_{KL}
@@ -589,7 +589,7 @@ z = mu + std * eps
 
 $$
 q_{\phi}(z|x)
-=
+{=}
 \mathcal{N}
 \left(
 \mu_{\phi}(x),
@@ -611,8 +611,8 @@ $$
 
 $$
 \mathcal{J}(\theta,\phi;x)
-=
--
+{=}
+{-}
 \log p_{\theta}(x|z)
 +
 D_{KL}
@@ -625,7 +625,7 @@ $$
 
 $$
 p_{\theta}(x|z)
-=
+{=}
 \mathcal{N}
 \left(
 \mu_{\theta}(z),
@@ -646,9 +646,9 @@ $$
 \mu_{\phi,d}(x)^2
 +
 \sigma_{\phi,d}(x)^2
--
+{-}
 1
--
+{-}
 2\log\sigma_{\phi,d}(x)
 \right)
 $$
@@ -657,7 +657,7 @@ $$
 
 $$
 \mathcal{J}_{batch}
-=
+{=}
 \frac{1}{B}
 \sum_{i=1}^{B}
 \left[
@@ -679,8 +679,8 @@ $$
 
 $$
 D_{KL}
-=
--
+{=}
+{-}
 \frac{1}{2}
 \sum_d
 \left(
@@ -692,7 +692,7 @@ $$
 
 $$
 \text{loss}
-=
+{=}
 \text{BCEWithLogits}
 \left(
 \text{recon\_logits},
@@ -813,7 +813,7 @@ VAE 的最终模型由三部分组成：
 
 $$
 q_{\phi}(z|x)
-=
+{=}
 \mathcal{N}
 \left(
 \mu_{\phi}(x),
@@ -833,7 +833,7 @@ $$
 
 $$
 \text{Loss}
-=
+{=}
 \text{Reconstruction Loss}
 +
 \text{KL Loss}
@@ -843,7 +843,7 @@ $$
 
 $$
 \text{KL Loss}
-=
+{=}
 D_{KL}\left(q_{\phi}(z|x)\|p(z)\right)
 $$
 
