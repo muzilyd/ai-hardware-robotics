@@ -585,6 +585,124 @@ z = mu + std * eps
 
 这样随机性来自 `eps`，而 `z` 是 `mu` 和 `logvar` 的可导函数，梯度可以从 Decoder 回传到 Encoder。
 
+重参数化之后，模型训练时真正计算的是负 ELBO 的一个可导估计。对一个训练样本 $x$，计算流程可以写成：
+
+$$
+q_{\phi}(z|x)
+=
+\mathcal{N}
+\left(
+\mu_{\phi}(x),
+\operatorname{diag}(\sigma_{\phi}^2(x))
+\right)
+$$
+
+$$
+\epsilon\sim\mathcal{N}(0,I),
+\quad
+z=\mu_{\phi}(x)+\sigma_{\phi}(x)\odot\epsilon
+$$
+
+$$
+\hat{x}=\mu_{\theta}(z)
+$$
+
+因此单个样本的训练目标为：
+
+$$
+\mathcal{J}(\theta,\phi;x)
+=
+-
+\log p_{\theta}(x|z)
++
+D_{KL}
+\left(
+q_{\phi}(z|x)\|p(z)
+\right)
+$$
+
+如果把 Decoder 的输出分布设为高斯分布：
+
+$$
+p_{\theta}(x|z)
+=
+\mathcal{N}
+\left(
+\mu_{\theta}(z),
+\sigma_x^2 I
+\right)
+$$
+
+忽略与模型参数无关的常数后，重建项等价于均方误差，真正优化的公式可以写成：
+
+$$
+\mathcal{J}(\theta,\phi;x)
+\propto
+\left\|x-\mu_{\theta}(z)\right\|^2
++
+\frac{1}{2}
+\sum_d
+\left(
+\mu_{\phi,d}(x)^2
++
+\sigma_{\phi,d}(x)^2
+-
+1
+-
+2\log\sigma_{\phi,d}(x)
+\right)
+$$
+
+这里第一项是重建误差，第二项是 $q_{\phi}(z|x)$ 与标准正态先验 $p(z)=\mathcal{N}(0,I)$ 之间的 KL 散度。实际训练一个 mini-batch 时，通常对 batch 内样本取平均：
+
+$$
+\mathcal{J}_{batch}
+=
+\frac{1}{B}
+\sum_{i=1}^{B}
+\left[
+\operatorname{Recon}
+\left(
+x_i,
+\operatorname{Decoder}_{\theta}(z_i)
+\right)
++
+\beta
+D_{KL}
+\left(
+q_{\phi}(z|x_i)\|p(z)
+\right)
+\right]
+$$
+
+在下面的 MNIST 代码里，Encoder 输出的是 `logvar`，即 $\log\sigma^2$，因此 KL 项写成：
+
+$$
+D_{KL}
+=
+-
+\frac{1}{2}
+\sum_d
+\left(
+1+\text{logvar}_d-\mu_d^2-\exp(\text{logvar}_d)
+\right)
+$$
+
+如果重建项使用 `binary_cross_entropy_with_logits`，那么代码里的总 loss 就是这个 batch 目标的实现：
+
+$$
+\text{loss}
+=
+\text{BCEWithLogits}
+\left(
+\text{recon\_logits},
+x
+\right)
++
+\beta D_{KL}
+$$
+
+
 ### 3.3 训练目标
 
 MNIST 像素被归一化到 $[0,1]$，因此重建项使用二元交叉熵。训练脚本中使用 logits 版本：
